@@ -42,7 +42,9 @@ void printSignUp()
     // char pic[heii hei - (heii)+1][widd * wid - (widd - 2) - 7+1];
     char pic[200][200];
     gotoxy(0,2);
-    makePic(5,11,heii,widd,pic,7);
+    savefile trash;
+    strcpy(trash.name," ");
+    makePic(5,11,heii,widd,pic,7,trash);
     TextColor(12);
     for(int i = 0; i <= heii * 2 - 2; i++)
     {
@@ -61,7 +63,7 @@ void printSignUp()
     }
 
     int BackGroundColor = rand() % 15 + 1;
-    makePic(5,11,heii,widd,pic,5);
+    makePic(5,11,heii,widd,pic,5,trash);
     TextColor(10);
     for(int i = 0; i <= heii * 6; i++)
     {
@@ -224,21 +226,33 @@ void printSignUp()
         return void(printSignUp());
     }
 
-    for(int i = 0; i < strlen(dangky.name); i++)
+for (int i = 0; i < strlen(dangky.name); i++)
         dangky.name[i] ^= dangky.mask;
 
-    for(int i = 0; i < strlen(dangky.password); i++)
+    for (int i = 0; i < strlen(dangky.password); i++)
         dangky.password[i] ^= dangky.mask;
 
-    for(int i = 0; i < 5; i++)
+    for (int i = 0; i < 5; i++)
     {
-        dangky.state[i].p = dangky.state[i].q = dangky.record[i].points = dangky.record[i].date.dd = dangky.record[i].date.mm = dangky.record[i].date.yy = dangky.state[i].p_ = dangky.state[i].q_ = -1;
-        for(int j = 0; j < 999; j++)
+        dangky.state[i].p = dangky.state[i].q = dangky.record[i].points = dangky.record[i].date.dd = dangky.record[i].date.mm = dangky.record[i].date.yy = dangky.state[i].p_ = dangky.state[i].q_ = 0;
+        for (int j = 0; j < BOARDSIZE; j++)
             dangky.state[i].board[j] = '\0';
-        for(int j = 0; j < 100; j++)
+        for (int j = 0; j < URLSIZE; j++)
             dangky.state[i].file_background[j] = '\0';
+        for (int j = 0; j < PADDING; j++)
+        {
+            dangky.record[i].padding[j] = '\0';
+            // if (j == PADDING - 1)
+            //     dangky.record[i].padding[j] = '\n';
+        }
+        for (int j = 0; j < PADDING; j++)
+        {
+            dangky.state[i].padding[j] = '\0';
+            // if (j == PADDING - 1)
+            //     dangky.state[i].padding[j] = '\n';
+        }
     }
-    dangky.record[0].points = 0;
+    dangky.record[0].points = 1;
 
     // Ghi vao file
     ofstream fout;

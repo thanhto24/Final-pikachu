@@ -26,14 +26,35 @@ void init(int hei, int wid, int n, int m, char C[200][200], char view[200][200],
         }
     else
     {
-        for(int i = 0; i < 5; i++)
+        savefile tmp;
+        ifstream fin;
+        fin.open("account\\account.dat", ios::binary);
+        while (!fin.eof())
         {
-            if(player.state[i].p_!=-1)
+            fin.read((char *)&(tmp), sizeof(savefile));
+            if (fin.eof())
+                break;
+            for (int i = 0; i < strlen(tmp.name); i++)
+                tmp.name[i] ^= tmp.mask;
+            for (int i = 0; i < strlen(tmp.password); i++)
+                tmp.password[i] ^= tmp.mask;
+            if (strcmp(tmp.name, player.name) == 0 && strcmp(tmp.password, player.password) == 0)
             {
-                for(int j = 0; j < player.state[i].p * player.state[i].q; j++)
-                    c[j] = player.state[i].board[j];
+                for (int i = 0; i < 5; i++)
+                {
+                    if (tmp.state[i].p_ != 0)
+                    {
+                        for (int j = 0; j < n * m; j++)
+                        {
+                            c[j] = tmp.state[i].board[j];
+                        }
+                        i = 5;
+                    }
+                }
+                break;
             }
         }
+        fin.close();
     }
 
     int dem = 0;

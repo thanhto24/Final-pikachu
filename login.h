@@ -25,7 +25,9 @@ void printLogin()
     PlaySound(TEXT("Music\\background1.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
     char pic[200][200];
     gotoxy(0, 0);
-    makePic(5,11,heii,widd,pic,8);
+    savefile trash;
+    strcpy(trash.name," ");
+    makePic(5,11,heii,widd,pic,8,trash);
     for(int i = 0; i <= heii * 8; i++)
     {
         for(int j = 0; j <= widd * 19 - (widd - 2) - 6; j++)
@@ -162,11 +164,21 @@ void printLogin()
                         player.state[i].q_ = tmp.state[i].q_;
                         player.state[i].p = tmp.state[i].p;
                         player.state[i].p_ = tmp.state[i].p_;
-                        for(int j = 0; j < player.state[i].q * player.state[i].p; j++)
-                            player.state[i].board[j] = tmp.state[i].board[j];
 
-                        // for(int j = 0; j < player.state[i].q * player.state[i].p; j++)
-                        //     player.state[i].file_background[j] = tmp.state[i].file_background[j];
+                        for (int j = 0; j < BOARDSIZE; j++)
+                            if (tmp.state[i].board[j] != '\0')
+                                player.state[i].board[j] = tmp.state[i].board[j] ^ tmp.mask;
+                            else
+                                player.state[i].board[j] = '\0';
+
+                        for (int j = 0; j < URLSIZE; j++)
+                            if (tmp.state[i].file_background[j] != '\0')
+                                player.state[i].file_background[j] = tmp.state[i].file_background[j] ^ tmp.mask;
+                            else
+                                player.state[i].file_background[j] = '\0';
+
+                        for(int j = 0; j < PADDING; j++)
+                            player.state[i].padding[j] = player.record[i].padding[j] = '\0';
                     }
                 }
                 cout << endl;

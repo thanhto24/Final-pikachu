@@ -35,21 +35,7 @@ void makeLevel(int hei, int wid, int n, int m, int choosenLevel, savefile &playe
 
     system("cls");
     init(hei, wid, n, m, C, view, ate, choosenLevel, player, is_cont);
-    // if (player.state[choosenLevel - 1].file_background[0])// bug eo biet sua
-        makePic(hei, wid, n, m, pic, choosenLevel);
-    // else
-    // {
-    //     int dem = 0;
-    //     for (int i = 0; i < n; i++)
-    //         for (int j = 0; j < m; j++)
-    //             if (dem < 100)
-    //             {
-    //                 pic[i][j] = player.state[choosenLevel - 1].file_background[dem];
-    //                 dem++;
-    //             }
-    //             else
-    //                 pic[i][j] = ' ';
-    // }
+    makePic(hei, wid, n, m, pic, choosenLevel, player);
     process(hei, wid, n, m, C, view, pic, ate, movingOn, selected, cpy, player, choosenLevel, is_cont);
 }
 
@@ -62,7 +48,9 @@ void choiceLevel(savefile player)
     // char pic[heii hei - (heii)+1][widd * wid - (widd - 2) - 7+1];
     char pic[200][200];
     gotoxy(0, 3);
-    makePic(5,11,heii,widd,pic,9);
+    savefile trash;
+    strcpy(trash.name," ");
+    makePic(5,11,heii,widd,pic,9,trash);
     int backgroundColor = rand() % 15 + 1;
     PlaySound(TEXT("Music\\background.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
     for(int i = 0; i <= heii * 5 - (heii); i++)
@@ -118,7 +106,7 @@ void choiceLevel(savefile player)
             TextColor(6);
         else if (i == 7)
             TextColor(7);
-        else if (player.record[i - 1].points == -1)
+        else if (player.record[i - 1].points == 0)
             TextColor(4);
         doTab(7);
         cout << "    " << levelName[i] << endl;
@@ -196,12 +184,10 @@ void choiceLevel(savefile player)
                             if (h & 1 || w & 1)
                             {
                                 cout << "Data error, input must be even numbers\nSo we change " << h << " x " << w << " to ";
-                                if (h & 1)
+                                if(h<w)
                                     h++;
-                                h = min(h, 20);
-                                if (w & 1)
+                                else
                                     w++;
-                                w = min(w, 20);
                                 TextColor(4);
                                 cout << h;
                                 TextColor(7);
@@ -227,7 +213,7 @@ void choiceLevel(savefile player)
                         Sleep(3000);
                     }
 
-                if (player.record[x - 1].points == -1)
+                if (player.record[x - 1].points == 0)
                     continue;
 
                 if (x == 1)
@@ -259,7 +245,7 @@ void choiceLevel(savefile player)
                     TextColor(6);
                 else if (i == 7)
                     TextColor(7);
-                else if (player.record[i - 1].points == -1)
+                else if (player.record[i - 1].points == 0)
                     TextColor(4);
                 doTab(7);
                 cout << "    " << levelName[i] << endl;

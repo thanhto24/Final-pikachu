@@ -9,7 +9,7 @@
 
 void doTab(int cnt);
 
-void makePic(int hei, int wid, int n, int m, char pic[200][200], int num);
+void makePic(int hei, int wid, int n, int m, char pic[200][200], int num, savefile player);
 void menuMove(int &choice);
 void printHelp();
 void printHighScore();
@@ -23,7 +23,9 @@ void displayMenu()
     char pic[200][200];
     PlaySound(TEXT("Music\\menu.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
     gotoxy(0,5);
-    makePic(5,11,heii,widd,pic,0);
+    savefile trash;
+    strcpy(trash.name," ");
+    makePic(5,11,heii,widd,pic,0,trash);
     TextColor(10);
     for(int i = 0; i <= heii * 5 - (heii); i++)
     {
@@ -171,7 +173,9 @@ void printHelp()
 
     char pic[200][200];
     gotoxy(0,0);
-    makePic(5,11,heii,widd,pic,5);
+    savefile trash;
+    strcpy(trash.name," ");
+    makePic(5,11,heii,widd,pic,5,trash);
     PlaySound(TEXT("Music\\background1.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
     TextColor(10);
     for(int i = 0; i <= heii * 9; i++)
@@ -278,7 +282,7 @@ void printHelp()
 bool cmp(savefile a, savefile b)
 {
     for (int i = 5 - 1; i >= 0; i--)
-        if (a.record[i].points >=0 || b.record[i].points >= 0)
+        if (a.record[i].points > 1 || b.record[i].points > 1)
             return a.record[i].points > b.record[i].points;
 }
 
@@ -308,7 +312,9 @@ void printHighScore()
     // char pic[heii hei - (heii)+1][widd * wid - (widd - 2) - 7+1];
     char pic[200][200];
     gotoxy(0,2);
-    makePic(5,11,heii,widd,pic,6);
+    savefile trash;
+    strcpy(trash.name," ");
+    makePic(5,11,heii,widd,pic,6,trash);
     PlaySound(TEXT("Music\\background1.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
     TextColor(10);
     for(int i = 0; i <= heii * 2 - (heii) + 2; i++)
@@ -338,7 +344,7 @@ void printHighScore()
 
         for (int k = 5 - 1; k >= 0; k--)
         {
-            if (topPlayer[i].record[k].points > 0)
+            if (topPlayer[i].record[k].points > 1)
             {
                 cout <<topPlayer[i].name;
 
@@ -386,7 +392,9 @@ void printCredit()
 
     char pic[200][200];
     gotoxy(0,0);
-    makePic(5,11,heii,widd,pic,5);
+    savefile trash;
+    strcpy(trash.name," ");
+    makePic(5,11,heii,widd,pic,5,trash);
     PlaySound(TEXT("Music\\background1.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
     TextColor(10);
     for(int i = 0; i <= heii * 9; i++)

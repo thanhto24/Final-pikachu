@@ -72,7 +72,7 @@ void printInfo(savefile player, int Swap, int Hint)
 
     doTab(3);
     TextColor(4);
-    cout << "Double press Backspace button to Back to menu !!!";
+    cout << "Double press Backspace button to Back to Menu!!!";
 
 }
 
@@ -278,7 +278,7 @@ void choiceLevel(savefile player);
 void process(int hei, int wid, int n, int m, char C[200][200], char view[200][200], char pic[200][200], bool ate[200][200], bool movingOn[200][200], bool selected[200][200], char cpy[200][200], savefile &player, const int choosenLevel, bool is_cont)
 {
     int y = player.state[choosenLevel - 1].p_, x = player.state[choosenLevel - 1].q_;
-    if (!is_cont)
+    if (!is_cont || (x == -1 && y == -1))
         x = y = 0;
     int Swap = 10 - choosenLevel, Hint = 10 - choosenLevel, Point = (Swap + Hint) * 100 + choosenLevel * 500;
     int TIME = 600 - choosenLevel * 30;
@@ -311,6 +311,7 @@ void process(int hei, int wid, int n, int m, char C[200][200], char view[200][20
         {
             swapped = true;
             refreshArray(hei, wid,n, m, C, view, ate);
+            PlaySound(TEXT("Music\\swap.wav"), NULL, SND_FILENAME | SND_ASYNC);
             printBoard(hei,wid,n, m, 2, view, pic, movingOn, selected, cpy);
             Sleep(300);
         }
@@ -326,10 +327,17 @@ void process(int hei, int wid, int n, int m, char C[200][200], char view[200][20
         if (stop)
         {
             for (int i = 0; i < 5; i++)
-                player.state[i].p_ = player.state[i].q_ = -1;
+                player.state[i].p_ = player.state[i].q_ = 0;
 
             player.state[choosenLevel - 1].p_ = y;
             player.state[choosenLevel - 1].q_ = x;
+
+            if (x == 0 && y == 0)
+            {
+                player.state[choosenLevel - 1].p_ = -1;
+                player.state[choosenLevel - 1].q_ = -1;
+            }
+
             player.record[choosenLevel - 1].points = -2; // Neu dang choi ma out thi k duoc ghi vao thanh tich nua
 
             int dem = 0;
@@ -343,15 +351,13 @@ void process(int hei, int wid, int n, int m, char C[200][200], char view[200][20
             }
 
             updateFile(player);
-            displayMenu();
-            return;
+            system("cls");
+			displayMenu();
+			return;
         }
         if (timeLeft == -1)
             break;
     }
-
-    // Point -= max(0, ((t->tm_min - m1) * 60 + (t->tm_sec - s1))/2); // 2 giay mat 1 point
-    // player.maxScore = 0;
 
     memset(movingOn, false, sizeof(movingOn));
     printBoard(hei, wid,n, m, 0, view, pic, movingOn, selected, cpy);
@@ -359,13 +365,14 @@ void process(int hei, int wid, int n, int m, char C[200][200], char view[200][20
     Sleep(1234);
     system("cls");
 
-    player.state[choosenLevel - 1].p_ = player.state[choosenLevel - 1].q_ = -1;
+    player.state[choosenLevel - 1].p_ = player.state[choosenLevel - 1].q_ = 0;
+    
     if(is_cont)
-        Point = -1;
+        Point = -2;
 
     if (timeLeft != -1)
     {
-        if (Point > player.record[choosenLevel - 1].points)
+        if (Point >= player.record[choosenLevel - 1].points)
         {
             player.record[choosenLevel - 1].points = Point;
             player.record[choosenLevel - 1].date.dd = t->tm_mday;
@@ -373,7 +380,7 @@ void process(int hei, int wid, int n, int m, char C[200][200], char view[200][20
             player.record[choosenLevel - 1].date.yy = t->tm_year + 1900;
         }
         if (!is_cont)
-            player.record[choosenLevel].points = max(player.record[choosenLevel].points, 0); // Khong stop thi moi uplevel
+            player.record[choosenLevel].points = max(player.record[choosenLevel].points, 1); // Khong stop thi moi uplevel
         
         SetConsoleOutputCP(65001);
         const int heii = 5, widd = 7;
@@ -381,7 +388,9 @@ void process(int hei, int wid, int n, int m, char C[200][200], char view[200][20
 
         char pic[200][200];
         gotoxy(0,0);
-        makePic(5,11,heii,widd,pic,5);
+        savefile trash;
+    	strcpy(trash.name," ");
+        makePic(5,11,heii,widd,pic,5,trash);
         PlaySound(TEXT("Music\\win.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
         TextColor(10);
         for(int i = 0; i <= heii * 9; i++)
@@ -432,7 +441,9 @@ void process(int hei, int wid, int n, int m, char C[200][200], char view[200][20
 
         char pic[200][200];
         gotoxy(0,0);
-        makePic(5,11,heii,widd,pic,5);
+        savefile trash;
+    	strcpy(trash.name," ");
+        makePic(5,11,heii,widd,pic,5,trash);
         PlaySound(TEXT("Music\\lose.wav"), NULL, SND_FILENAME | SND_LOOP | SND_ASYNC);
         TextColor(10);
         for(int i = 0; i <= heii * 9; i++)
@@ -479,7 +490,7 @@ void process(int hei, int wid, int n, int m, char C[200][200], char view[200][20
 
 void updateFile(savefile player)
 {
-    savefile tmp;
+	savefile tmp;
     vector<savefile> adj;
     ifstream fin;
     fin.open("account\\account.dat", ios::binary);
@@ -517,13 +528,13 @@ void updateFile(savefile player)
                 tmp.state[i].q_ = player.state[i].q_;
                 tmp.state[i].p_ = player.state[i].p_;
 
-                if (player.state[i].p_ != -1 && player.state[i].q_ != -1)
-                {
-                    for (int j = 0; j < tmp.state[i].q * tmp.state[i].p; j++)
-                        tmp.state[i].board[j] = player.state[i].board[j];
-                }
+                if (player.state[i].p_ != 0 && player.state[i].q_ != 0)
+                    for (int j = 0; j < BOARDSIZE; j++)
+                    {
+                            tmp.state[i].board[j] = player.state[i].board[j];
+                    }
                 else
-                    for (int j = 0; j < tmp.state[i].q * tmp.state[i].p; j++)
+                    for (int j = 0; j < BOARDSIZE; j++)
                         tmp.state[i].board[j] = '\0';
             }
         }
@@ -532,8 +543,13 @@ void updateFile(savefile player)
     fin.close();
 
     ofstream fout;
+    fout.open("account\\account.dat", std::ofstream::out | std::ofstream::trunc);
+    fout.close();
+    
     fout.open("account\\account.dat", ios::binary);
     for (int i = 0; i < adj.size(); i++)
+    {
         fout.write((char *)&(adj[i]), sizeof(savefile));
+    }
     fout.close();
 }

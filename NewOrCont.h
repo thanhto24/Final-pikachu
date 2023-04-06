@@ -13,7 +13,7 @@ void doContinue(savefile player);
 bool canCont(savefile player)
 {
     for (int i = 0; i < 5; i++)
-        if (player.state[i].p_ != -1)
+        if (player.state[i].p_ != 0 && player.state[i].q_ != 0)
             return true;
     return false;
 }
@@ -27,7 +27,11 @@ void choiceNewOrCont(savefile player)
     // char pic[heii hei - (heii)+1][widd * wid - (widd - 2) - 7+1];
     char pic[200][200];
     gotoxy(0, 3);
-    makePic(5,11,heii,widd,pic,4);
+    savefile trash;
+    strcpy(trash.name," ");
+    makePic(5,11,heii,widd,pic,4,trash);
+    
+    if(!haveSavefile(player))
     for(int i = 0; i <= heii * 6 + 4; i++)
     {
         for(int j = 0; j <= widd * 20 + 10; j++)
